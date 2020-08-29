@@ -1,6 +1,8 @@
 # json-tools
 Use JSON to make HTML documents
 
+Preview: https://jsbin.com/qofemol/edit?js,output
+
 # 1 - Define your styled elements
 
 ```javascript

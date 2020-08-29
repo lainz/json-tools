@@ -12,6 +12,8 @@ function parseObj(obj, parent) {
         elm.classList = obj.class
     if (obj.text)
         elm.innerText = obj.text
+    if (obj.events)
+        obj.events.forEach(event => elm.addEventListener(event.name, event.call))
     parent.appendChild(elm)
     if (obj.child)
         obj.child.forEach(element => parseObj(element, elm))
@@ -22,11 +24,12 @@ function appendTo(parent, ...json) {
     json.forEach(element => parseObj(element, parent))
 }
 
-function elm(type, _class, text, ...child) {
+function elm(type, _class, text, events, ...child) {
     return {
         type: type,
         class: _class,
         text: text,
+        events: events,
         child: [...child]
     }
 }
@@ -36,11 +39,11 @@ function elm(type, _class, text, ...child) {
 // ==============================================
 
 function p(...child) {
-    return elm('p', '', '', ...child)
+    return elm('p', '', '', null, ...child)
 }
 
 function pItalic(...child) {
-    return elm('p', 'italic', '', ...child)
+    return elm('p', 'italic', '', null, ...child)
 }
 
 function spanRedBold(text) {
@@ -52,11 +55,20 @@ function span(text) {
 }
 
 function div(...child) {
-    return elm('div', '', '', ...child)
+    return elm('div', '', '', null, ...child)
 }
 
 function h1(text) {
-    return elm('h1', '', text)
+    // CLOSURE
+    var count = 0
+
+    // ELEMENT FUNCTIONALITY
+    function alertTitle (event) {
+        count++;
+        event.target.innerText = `You clicked me ${count} times!`
+    }
+    
+    return elm('h1', 'hand', text, [{name:'click', call: alertTitle}])
 }
 
 // ==============================================
@@ -81,7 +93,7 @@ var json = div(
         ),
         p(span('Otra línea.'))
     ),
-    article('Another World',
+    article('Another World... Click me',
         pItalic(
             span('El auto es '), spanRedBold('Super Rojo.')
         ),
